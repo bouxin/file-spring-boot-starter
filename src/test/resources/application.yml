@@ -1,0 +1,13 @@
+com:
+  xxx:
+    cloud:
+      storage:
+        prefer-cloud-type: aliyun
+        max-file-size: 1024
+        aliyun-config:
+          endpoint: https://hello-aliyun
+          access-key: ${random.uuid}
+          secret-key: ${random.uuid}
+          bucket: hz-photos
+          parentpath:  /myun/test
+          storepath: /1111/
