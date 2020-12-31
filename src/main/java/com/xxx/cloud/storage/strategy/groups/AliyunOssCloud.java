@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.xxx.cloud.storage.anno.ActiveCloud;
 import com.xxx.cloud.storage.common.CloudFile;
-import com.xxx.cloud.storage.config.MyunCloudStorageProperties;
+import com.xxx.cloud.storage.config.CloudStorageProperties;
 import com.xxx.cloud.storage.enums.CloudType;
 
 import java.io.ByteArrayInputStream;
@@ -33,12 +33,12 @@ public class AliyunOssCloud implements CloudStorable {
 
     private static final Logger log = LoggerFactory.getLogger(AliyunOssCloud.class);
 
-    private MyunCloudStorageProperties.AliyunConfig self;
+    private CloudStorageProperties.AliyunConfig self;
 
     private AliyunOssCloud() {
     }
 
-    public AliyunOssCloud(MyunCloudStorageProperties.AliyunConfig props) {
+    public AliyunOssCloud(CloudStorageProperties.AliyunConfig props) {
         if (props == null) {
             throw new CloudStorageConfigurationException("AliyunOSS config unset");
         }

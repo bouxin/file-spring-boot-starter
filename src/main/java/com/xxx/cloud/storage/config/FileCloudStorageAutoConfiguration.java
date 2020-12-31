@@ -14,12 +14,12 @@ import com.xxx.cloud.storage.common.DefaultFileService;
  * @see com.xxx.cloud.storage.config
  */
 @Configuration
-@EnableConfigurationProperties(MyunCloudStorageProperties.class)
+@EnableConfigurationProperties(CloudStorageProperties.class)
 public class FileCloudStorageAutoConfiguration {
 
-    public final MyunCloudStorageProperties properties;
+    public final CloudStorageProperties properties;
 
-    public FileCloudStorageAutoConfiguration(MyunCloudStorageProperties properties) {
+    public FileCloudStorageAutoConfiguration(CloudStorageProperties properties) {
         this.properties = properties;
     }
 
@@ -31,7 +31,7 @@ public class FileCloudStorageAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MyunCloudStorageProperties properties() {
+    public CloudStorageProperties properties() {
         return this.properties;
     }
 

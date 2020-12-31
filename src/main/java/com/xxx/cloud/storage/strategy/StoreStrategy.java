@@ -1,7 +1,7 @@
 package com.xxx.cloud.storage.strategy;
 
 import com.xxx.cloud.storage.CloudStorable;
-import com.xxx.cloud.storage.config.MyunCloudStorageProperties;
+import com.xxx.cloud.storage.config.CloudStorageProperties;
 import com.xxx.cloud.storage.exception.CloudStorageConfigurationException;
 import com.xxx.cloud.storage.strategy.groups.AliyunOssCloud;
 import com.xxx.cloud.storage.strategy.groups.HuaweiObsCloud;
@@ -16,7 +16,7 @@ import com.xxx.cloud.storage.strategy.groups.TencentOssCloud;
  */
 public class StoreStrategy {
 
-    public static CloudStorable create(MyunCloudStorageProperties properties) {
+    public static CloudStorable create(CloudStorageProperties properties) {
         if (properties.isDisable()) {
             throw new CloudStorageConfigurationException("Cloud storage was disabled");
         }

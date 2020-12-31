@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.xxx.cloud.storage.anno.ActiveCloud;
 import com.xxx.cloud.storage.common.CloudFile;
-import com.xxx.cloud.storage.config.MyunCloudStorageProperties;
+import com.xxx.cloud.storage.config.CloudStorageProperties;
 import com.xxx.cloud.storage.enums.CloudType;
 import com.xxx.cloud.storage.exception.CloudStorageConfigurationException;
 
@@ -37,12 +37,12 @@ public class TencentOssCloud implements CloudStorable {
 
     private static final Logger log = LoggerFactory.getLogger(TencentOssCloud.class);
 
-    private MyunCloudStorageProperties.TencentConfig self;
+    private CloudStorageProperties.TencentConfig self;
 
     private TencentOssCloud() {
     }
 
-    public TencentOssCloud(MyunCloudStorageProperties.TencentConfig props) {
+    public TencentOssCloud(CloudStorageProperties.TencentConfig props) {
         if (props == null) {
             throw new CloudStorageConfigurationException("TencentOSS config unset");
         }

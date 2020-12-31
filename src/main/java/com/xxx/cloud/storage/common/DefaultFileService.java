@@ -1,7 +1,7 @@
 package com.xxx.cloud.storage.common;
 
 import com.xxx.cloud.storage.IFileService;
-import com.xxx.cloud.storage.config.MyunCloudStorageProperties;
+import com.xxx.cloud.storage.config.CloudStorageProperties;
 import com.xxx.cloud.storage.exception.CloudStorageException;
 import com.xxx.cloud.storage.exception.CloudStorageIOException;
 import com.xxx.cloud.storage.strategy.StoreStrategy;
@@ -22,7 +22,7 @@ import java.io.InputStream;
 public class DefaultFileService implements IFileService {
 
     @Autowired
-    private MyunCloudStorageProperties properties;
+    private CloudStorageProperties properties;
 
     @Override
     public CloudFile upload(final byte[] contents) {

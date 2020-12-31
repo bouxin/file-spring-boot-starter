@@ -9,7 +9,7 @@ import com.xxx.cloud.storage.exception.CloudStorageException;
 import org.slf4j.LoggerFactory;
 import com.xxx.cloud.storage.anno.ActiveCloud;
 import com.xxx.cloud.storage.common.CloudFile;
-import com.xxx.cloud.storage.config.MyunCloudStorageProperties;
+import com.xxx.cloud.storage.config.CloudStorageProperties;
 import com.xxx.cloud.storage.enums.CloudType;
 
 import java.io.ByteArrayInputStream;
@@ -31,11 +31,11 @@ import java.util.UUID;
 public class HuaweiObsCloud implements CloudStorable {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(HuaweiObsCloud.class.getSimpleName());
 
-    private MyunCloudStorageProperties.HuaweiConfig self;
+    private CloudStorageProperties.HuaweiConfig self;
 
     private HuaweiObsCloud() {}
 
-    public HuaweiObsCloud(MyunCloudStorageProperties.HuaweiConfig props) {
+    public HuaweiObsCloud(CloudStorageProperties.HuaweiConfig props) {
         if (props == null) {
             throw new CloudStorageConfigurationException("HuaweiOBS config unset");
         }

@@ -11,11 +11,11 @@ import com.xxx.cloud.storage.enums.CloudType;
  *
  * @author boxin
  * @date 2020-12-29
- * @see MyunCloudStorageProperties
+ * @see CloudStorageProperties
  */
 @Component
 @ConfigurationProperties(prefix = "com.xxx.cloud.storage")
-public class MyunCloudStorageProperties {
+public class CloudStorageProperties {
 
     private boolean disable = false;
 
@@ -46,7 +46,7 @@ public class MyunCloudStorageProperties {
         return preferCloudType;
     }
 
-    public MyunCloudStorageProperties setPreferCloudType(CloudType preferCloudType) {
+    public CloudStorageProperties setPreferCloudType(CloudType preferCloudType) {
         if (preferCloudType == null) {
             throw new CloudStorageConfigurationException("Choose any cloud platform!");
         }
@@ -58,7 +58,7 @@ public class MyunCloudStorageProperties {
         return maxFileSize;
     }
 
-    public MyunCloudStorageProperties setMaxFileSize(long maxFileSize) {
+    public CloudStorageProperties setMaxFileSize(long maxFileSize) {
         this.maxFileSize = maxFileSize;
         return this;
     }
@@ -67,7 +67,7 @@ public class MyunCloudStorageProperties {
         return huaweiConfig;
     }
 
-    public MyunCloudStorageProperties setHuaweiConfig(HuaweiConfig huaweiConfig) {
+    public CloudStorageProperties setHuaweiConfig(HuaweiConfig huaweiConfig) {
         this.huaweiConfig = huaweiConfig;
         return this;
     }
@@ -76,7 +76,7 @@ public class MyunCloudStorageProperties {
         return aliyunConfig;
     }
 
-    public MyunCloudStorageProperties setAliyunConfig(AliyunConfig aliyunConfig) {
+    public CloudStorageProperties setAliyunConfig(AliyunConfig aliyunConfig) {
         this.aliyunConfig = aliyunConfig;
         return this;
     }
@@ -85,7 +85,7 @@ public class MyunCloudStorageProperties {
         return tencentConfig;
     }
 
-    public MyunCloudStorageProperties setTencentConfig(TencentConfig tencentConfig) {
+    public CloudStorageProperties setTencentConfig(TencentConfig tencentConfig) {
         this.tencentConfig = tencentConfig;
         return this;
     }
