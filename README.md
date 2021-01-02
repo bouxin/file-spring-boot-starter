@@ -9,14 +9,14 @@
 - ###引入
   > ```xml
   > <dependency>
-  >     <groupId>com.xxx.cloud.storage</groupId>
+  >     <groupId>com.rugoo.cloud.storage</groupId>
   >     <artifactId>spring-boot-starter-file-cloud-storage</artifactId>
   >     <version>1.0.0-SNAPSHOT</version>
   > </dependency>
   > ```
   
 - ###配置
-  > 配置前置项 **com.xxx.cloud.storage**
+  > 配置前置项 **com.rugoo.cloud.storage**
   > ```yaml
   > prefer-cloud-type: aliyun       # 云服务商
   > endpoint: https://hello-aliyun  # 服务商域名节点 

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.xxx.cloud.storage.config.FileCloudStorageAutoConfiguration
+  com.rugoo.cloud.storage.config.FileCloudStorageAutoConfiguration
