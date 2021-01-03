@@ -30,7 +30,7 @@ public class DefaultFileService implements IFileService {
         Assert.state(uploadInfo != null && uploadInfo.getContents() != null, "Upload request without content!");
 
         if (uploadInfo.getContents() instanceof byte[]) {
-            Assert.state(((Byte[]) uploadInfo.getContents()).length < properties.getMaxFileSize().toBytes(), "Max file contents limited!");
+            Assert.state(((byte[]) uploadInfo.getContents()).length < properties.getMaxFileSize().toBytes(), "Max file contents limited!");
         } else if (uploadInfo.getContents() instanceof File) {
             Assert.state(((File) uploadInfo.getContents()).exists(), "Uploading file not exists!");
             Assert.state(((File) uploadInfo.getContents()).length() < properties.getMaxFileSize().toBytes(), "Max file contents limited!");
