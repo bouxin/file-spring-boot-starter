@@ -103,7 +103,7 @@ public class HuaweiObsCloud implements CloudStorable, CustomCloudFileCreator {
             }
         }
 
-        return createCloudFile(self, fileKey, filename, uploadInfo.getContentsLength(), CloudType.HUAWEI);
+        return createCloudFile(self, fileKey, filename, uploadInfo, CloudType.HUAWEI);
     }
 
     @Override

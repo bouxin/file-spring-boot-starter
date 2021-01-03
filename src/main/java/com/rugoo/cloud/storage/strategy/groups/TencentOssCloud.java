@@ -80,7 +80,7 @@ public class TencentOssCloud implements CloudStorable, CustomCloudFileCreator {
             cosClient.shutdown();
         }
 
-        return createCloudFile(self, fileKey, filename, uploadInfo.getContentsLength(), CloudType.TENCENT);
+        return createCloudFile(self, fileKey, filename, uploadInfo, CloudType.TENCENT);
     }
 
     @Override

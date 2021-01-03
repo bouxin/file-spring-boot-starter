@@ -77,7 +77,7 @@ public class AliyunOssCloud implements CloudStorable, CustomCloudFileCreator {
             }
         }
 
-        return createCloudFile(self, fileKey, filename, uploadInfo.getContentsLength(), CloudType.ALIYUN);
+        return createCloudFile(self, fileKey, filename, uploadInfo, CloudType.ALIYUN);
     }
 
     @Override

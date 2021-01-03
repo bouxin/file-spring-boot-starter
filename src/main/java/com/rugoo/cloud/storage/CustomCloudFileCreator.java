@@ -1,6 +1,7 @@
 package com.rugoo.cloud.storage;
 
 import com.rugoo.cloud.storage.common.CloudFile;
+import com.rugoo.cloud.storage.common.UploadInfo;
 import com.rugoo.cloud.storage.config.CloudStorageProperties;
 import com.rugoo.cloud.storage.enums.CloudType;
 import com.rugoo.cloud.storage.util.StringUtil;
@@ -17,7 +18,7 @@ public interface CustomCloudFileCreator {
     default CloudFile createCloudFile(CloudStorageProperties.Config config,
                                       String fileKey,
                                       String filename,
-                                      long contentLen,
+                                      UploadInfo uploadInfo,
                                       CloudType cloudType) {
         return CloudFile.createInstance()
                 .setAccessUrl(StringUtil.concat(config.getDomain(), "/", fileKey))
@@ -25,7 +26,8 @@ public interface CustomCloudFileCreator {
                 .setStorepath(config.getStorepath())
                 .setUploadtime(LocalDateTime.now())
                 .setCloudType(cloudType.name())
-                .setFsize(contentLen)
+                .setFsize(uploadInfo.getContentLength())
+                .setExtension(uploadInfo.getFileExtension())
                 .setPrevfilename(filename)
                 .setFilename(filename);
     }

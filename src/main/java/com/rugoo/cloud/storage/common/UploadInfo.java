@@ -11,7 +11,7 @@ import java.io.File;
 public class UploadInfo<T> {
     private T contents;
 
-    private long contentsLength;
+    private long contentLength;
 
     private String fileExtension;
 
@@ -23,20 +23,20 @@ public class UploadInfo<T> {
         this.contents = contents;
 
         if (contents instanceof byte[]) {
-            setContentsLength(((byte[]) contents).length);
+            setContentLength(((byte[]) contents).length);
         } else if (contents instanceof File) {
-            setContentsLength(((File) contents).length());
+            setContentLength(((File) contents).length());
         }
 
         return this;
     }
 
-    public long getContentsLength() {
-        return contentsLength;
+    public long getContentLength() {
+        return contentLength;
     }
 
-    private UploadInfo<T> setContentsLength(long contentsLength) {
-        this.contentsLength = contentsLength;
+    public UploadInfo<T> setContentLength(long contentLength) {
+        this.contentLength = contentLength;
         return this;
     }
 
