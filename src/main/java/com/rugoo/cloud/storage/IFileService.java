@@ -1,11 +1,9 @@
 package com.rugoo.cloud.storage;
 
-import com.qcloud.cos.transfer.Upload;
 import com.rugoo.cloud.storage.common.CloudFile;
 import com.rugoo.cloud.storage.common.UploadInfo;
 import com.rugoo.cloud.storage.exception.CloudStorageInitializingException;
 
-import java.io.File;
 
 /**
  * Description

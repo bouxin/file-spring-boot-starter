@@ -1,7 +1,7 @@
 package com.rugoo.cloud.storage;
 
 /**
- * 标识，可传输，可序列化
+ * 标识
  *
  * @author boxin
  * @date 2020-12-29

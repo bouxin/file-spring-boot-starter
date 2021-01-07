@@ -4,7 +4,6 @@ import com.rugoo.cloud.storage.common.ClientSign;
 import com.rugoo.cloud.storage.common.CloudFile;
 import com.rugoo.cloud.storage.common.UploadInfo;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -12,9 +11,9 @@ import java.io.InputStream;
  *
  * @author boxin
  * @date 2020-12-29
- * @see CloudStorable
+ * @see CloudStorageStrategy
  */
-public interface CloudStorable {
+public interface CloudStorageStrategy {
     /**
      * 客户端上传密令
      *

@@ -1,4 +1,4 @@
-package com.rugoo.cloud.storage.strategy.groups;
+package com.rugoo.cloud.storage.strategy.impl;
 
 import com.obs.services.exception.ObsException;
 import com.qcloud.cos.COSClient;
@@ -6,10 +6,8 @@ import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.exception.CosClientException;
-import com.qcloud.cos.model.ObjectMetadata;
-import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.region.Region;
-import com.rugoo.cloud.storage.CloudStorable;
+import com.rugoo.cloud.storage.CloudStorageStrategy;
 import com.rugoo.cloud.storage.CustomCloudFileCreator;
 import com.rugoo.cloud.storage.common.ClientSign;
 import com.rugoo.cloud.storage.common.UploadInfo;
@@ -23,11 +21,10 @@ import com.rugoo.cloud.storage.config.CloudStorageProperties;
 import com.rugoo.cloud.storage.enums.CloudType;
 import com.rugoo.cloud.storage.exception.CloudStorageConfigurationException;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -35,23 +32,24 @@ import java.util.UUID;
  *
  * @author boxin
  * @date 2020-12-29
- * @see com.rugoo.cloud.storage.strategy.groups
+ * @see com.rugoo.cloud.storage.strategy.impl
  */
 @MarkAsCloudStorage(type = CloudType.TENCENT)
-public class TencentOssCloud implements CloudStorable, CustomCloudFileCreator {
+public class TencentOSS implements CloudStorageStrategy, CustomCloudFileCreator {
 
-    private static final Logger log = LoggerFactory.getLogger(TencentOssCloud.class);
+    private static final Logger log = LoggerFactory.getLogger(TencentOSS.class);
 
-    private CloudStorageProperties.TencentConfig self;
 
-    private TencentOssCloud() {
-    }
+    @Resource
+    private CloudStorageProperties properties;
 
-    public TencentOssCloud(CloudStorageProperties.TencentConfig props) {
-        if (props == null) {
+    private CloudStorageProperties.TencentConfig config;
+
+    public TencentOSS() {
+        if (properties == null) {
             throw new CloudStorageConfigurationException("TencentOSS config unset");
         }
-        this.self = props;
+        this.config = properties.getTencentConfig();
     }
 
     @Override
@@ -62,51 +60,51 @@ public class TencentOssCloud implements CloudStorable, CustomCloudFileCreator {
     @Override
     public <T> CloudFile store(UploadInfo<T> uploadInfo) {
         String filename = UUID.randomUUID().toString();
-        String fileKey = StringUtil.concat(self.getStorepath(), "/", filename, ".", uploadInfo.getFileExtension());
+        String fileKey = StringUtil.concat(config.getStorepath(), "/", filename, ".", uploadInfo.getFileExtension());
 
         COSClient cosClient = cosClient();
 
         try {
             if (uploadInfo.getContents() instanceof byte[]) {
-                cosClient().putObject(self.getBucket(), fileKey, new ByteArrayInputStream((byte[])uploadInfo.getContents()), null);
+                cosClient().putObject(config.getBucket(), fileKey, new ByteArrayInputStream((byte[])uploadInfo.getContents()), null);
             } else if (uploadInfo.getContents() instanceof File) {
-                cosClient.putObject(self.getBucket(), fileKey, (File) uploadInfo.getContents());
+                cosClient.putObject(config.getBucket(), fileKey, (File) uploadInfo.getContents());
             }
         } catch (ObsException obsEx) {
             // 防止污染存储源
-            cosClient.deleteObject(self.getBucket(), fileKey);
+            cosClient.deleteObject(config.getBucket(), fileKey);
             throw new CloudStorageException("Upload failed with unexpected exception", obsEx);
         } finally {
             cosClient.shutdown();
         }
 
-        return createCloudFile(self, fileKey, filename, uploadInfo, CloudType.TENCENT);
+        return createCloudFile(config, fileKey, filename, uploadInfo, CloudType.TENCENT);
     }
 
     @Override
     public InputStream getFileContents(String objectId) {
-        return (InputStream) cosClient().getObject(self.getBucket(), objectId).getObjectContent();
+        return (InputStream) cosClient().getObject(config.getBucket(), objectId).getObjectContent();
     }
 
     @Override
     public boolean delete(String objectKey) {
         try {
-            cosClient().deleteObject(self.getBucket(), objectKey);
+            cosClient().deleteObject(config.getBucket(), objectKey);
             return true;
         } catch (CosClientException e) {
             if (log.isDebugEnabled()) {
                 e.printStackTrace();
-                log.error("Failed to delete file {}::{}", self.getBucket(), objectKey);
+                log.error("Failed to delete file {}::{}", config.getBucket(), objectKey);
             } else {
-                log.info("Failed to delete file {}::{}", self.getBucket(), objectKey);
+                log.info("Failed to delete file {}::{}", config.getBucket(), objectKey);
             }
             return false;
         }
     }
 
     private COSClient cosClient() {
-        COSCredentials cred = new BasicCOSCredentials(self.getAccessKey(), self.getSecretKey());
-        Region region = new Region(self.getRegion());
+        COSCredentials cred = new BasicCOSCredentials(config.getAccessKey(), config.getSecretKey());
+        Region region = new Region(config.getRegion());
         ClientConfig clientConfig = new ClientConfig(region);
         return new COSClient(cred, clientConfig);
     }

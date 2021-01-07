@@ -1,6 +1,7 @@
 package com.rugoo.cloud.storage.anno;
 
 import com.rugoo.cloud.storage.enums.CloudType;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -18,6 +19,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Component
 public @interface MarkAsCloudStorage {
     String value() default "";
 

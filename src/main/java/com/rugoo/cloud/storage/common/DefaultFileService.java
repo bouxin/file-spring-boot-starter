@@ -2,12 +2,13 @@ package com.rugoo.cloud.storage.common;
 
 import com.rugoo.cloud.storage.IFileService;
 import com.rugoo.cloud.storage.config.CloudStorageProperties;
-import com.rugoo.cloud.storage.exception.CloudStorageException;
+import com.rugoo.cloud.storage.enums.CloudType;
 import com.rugoo.cloud.storage.exception.CloudStorageIOException;
-import com.rugoo.cloud.storage.strategy.StoreStrategy;
+import com.rugoo.cloud.storage.strategy.StorageFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.io.InputStream;
  */
 public class DefaultFileService implements IFileService {
 
-    @Autowired
+    @Resource
     private CloudStorageProperties properties;
 
     @Override
@@ -35,14 +36,19 @@ public class DefaultFileService implements IFileService {
             Assert.state(((File) uploadInfo.getContents()).exists(), "Uploading file not exists!");
             Assert.state(((File) uploadInfo.getContents()).length() < properties.getMaxFileSize().toBytes(), "Max file contents limited!");
         }
+//        CloudType type = properties.getPreferCloudType();
+//
+//        if (uploadInfo.getForceType() != null) {
+//            type = uploadInfo.getForceType();
+//        }
 
-        return StoreStrategy.create(properties).store(uploadInfo);
+        return StorageFactory.create(properties.getPreferCloudType()).store(uploadInfo);
     }
 
     @Override
     public byte[] getContents(final String objectId) {
         check(objectId);
-        InputStream fileStream = StoreStrategy.create(properties).getFileContents(objectId);
+        InputStream fileStream = StorageFactory.create(properties.getPreferCloudType()).getFileContents(objectId);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final byte[] buffer = new byte[1024]; int len;
@@ -67,7 +73,7 @@ public class DefaultFileService implements IFileService {
     @Override
     public boolean delete(String objectId) {
         check(objectId);
-        return StoreStrategy.create(properties).delete(objectId);
+        return StorageFactory.create(properties.getPreferCloudType()).delete(objectId);
     }
 
     private void check(final String objectId) {

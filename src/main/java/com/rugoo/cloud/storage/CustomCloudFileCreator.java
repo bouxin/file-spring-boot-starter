@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
  * @date 2021-01-02
  */
 public interface CustomCloudFileCreator {
-    default CloudFile createCloudFile(CloudStorageProperties.Config config,
+    default <T> CloudFile createCloudFile(CloudStorageProperties.Config config,
                                       String fileKey,
                                       String filename,
-                                      UploadInfo uploadInfo,
+                                      UploadInfo<T> uploadInfo,
                                       CloudType cloudType) {
         return CloudFile.createInstance()
                 .setAccessUrl(StringUtil.concat(config.getDomain(), "/", fileKey))

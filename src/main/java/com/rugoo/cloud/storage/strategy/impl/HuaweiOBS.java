@@ -1,12 +1,10 @@
-package com.rugoo.cloud.storage.strategy.groups;
+package com.rugoo.cloud.storage.strategy.impl;
 
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
-import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
-import com.obs.services.model.PutObjectResult;
-import com.rugoo.cloud.storage.CloudStorable;
+import com.rugoo.cloud.storage.CloudStorageStrategy;
 import com.rugoo.cloud.storage.CustomCloudFileCreator;
 import com.rugoo.cloud.storage.common.ClientSign;
 import com.rugoo.cloud.storage.common.UploadInfo;
@@ -19,13 +17,12 @@ import com.rugoo.cloud.storage.common.CloudFile;
 import com.rugoo.cloud.storage.config.CloudStorageProperties;
 import com.rugoo.cloud.storage.enums.CloudType;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,21 +31,22 @@ import java.util.UUID;
  *
  * @author boxin
  * @date 2020-12-29
- * @see com.rugoo.cloud.storage.strategy.groups
+ * @see com.rugoo.cloud.storage.strategy.impl
  */
 @MarkAsCloudStorage(type = CloudType.HUAWEI)
-public class HuaweiObsCloud implements CloudStorable, CustomCloudFileCreator {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(HuaweiObsCloud.class);
+public class HuaweiOBS implements CloudStorageStrategy, CustomCloudFileCreator {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(HuaweiOBS.class);
 
-    private CloudStorageProperties.HuaweiConfig self;
+    @Resource
+    private CloudStorageProperties properties;
 
-    private HuaweiObsCloud() {}
+    private CloudStorageProperties.HuaweiConfig config;
 
-    public HuaweiObsCloud(CloudStorageProperties.HuaweiConfig props) {
-        if (props == null) {
+    public HuaweiOBS() {
+        if (properties.getHuaweiConfig() == null) {
             throw new CloudStorageConfigurationException("HuaweiOBS config unset");
         }
-        this.self = props;
+        this.config = properties.getHuaweiConfig();
     }
 
     @Override
@@ -68,10 +66,10 @@ public class HuaweiObsCloud implements CloudStorable, CustomCloudFileCreator {
         request.setExpires(3600);
         PostSignatureResponse response = obsClient().createPostSignature(request);
 
-        signature.setAccessKey(self.getAccessKey())
+        signature.setAccessKey(config.getAccessKey())
                 .setContentType("text/plain")
                 .setAcl("public-read")
-                .setEndpoint(StringUtil.concat("http://", self.getBucket(), self.getEndpoint(), "/"))
+                .setEndpoint(StringUtil.concat("http://", config.getBucket(), config.getEndpoint(), "/"))
                 .setPolicy(response.getPolicy())
                 .setToken(response.getToken())
                 .setSignature(response.getSignature());
@@ -82,19 +80,19 @@ public class HuaweiObsCloud implements CloudStorable, CustomCloudFileCreator {
     @Override
     public <T> CloudFile store(UploadInfo<T> uploadInfo) {
         String filename = UUID.randomUUID().toString();
-        String fileKey = StringUtil.concat( self.getStorepath(), "/", filename, ".", uploadInfo.getFileExtension());
+        String fileKey = StringUtil.concat( config.getStorepath(), "/", filename, ".", uploadInfo.getFileExtension());
 
         ObsClient obs = this.obsClient();
 
         try {
             if (uploadInfo.getContents() instanceof byte[]) {
-                obs.putObject(self.getBucket(), fileKey, new ByteArrayInputStream((byte[]) uploadInfo.getContents()));
+                obs.putObject(config.getBucket(), fileKey, new ByteArrayInputStream((byte[]) uploadInfo.getContents()));
             } else if (uploadInfo.getContents() instanceof File) {
-                obs.putObject(self.getBucket(), fileKey, (File) uploadInfo.getContents());
+                obs.putObject(config.getBucket(), fileKey, (File) uploadInfo.getContents());
             }
         } catch (ObsException obsEx) {
             // 防止污染存储源
-            obs.deleteObject(self.getBucket(), fileKey);
+            obs.deleteObject(config.getBucket(), fileKey);
             throw new CloudStorageException("Upload failed with unexpected exception", obsEx);
         } finally {
             try {
@@ -103,30 +101,31 @@ public class HuaweiObsCloud implements CloudStorable, CustomCloudFileCreator {
             }
         }
 
-        return createCloudFile(self, fileKey, filename, uploadInfo, CloudType.HUAWEI);
+        return createCloudFile(config, fileKey, filename, uploadInfo, CloudType.HUAWEI);
     }
 
     @Override
     public InputStream getFileContents(String objectId) {
-        return obsClient().getObject(self.getBucket(), objectId).getObjectContent();
+        return obsClient().getObject(config.getBucket(), objectId).getObjectContent();
     }
 
     @Override
     public boolean delete(String objectId) {
-        try {
-            return obsClient().deleteObject(self.getBucket(), objectId).isDeleteMarker();
-        } catch (ObsException e) {
+        try (ObsClient obs = obsClient()){
+            obs.deleteObject(config.getBucket(), objectId);
+            return true;
+        } catch (ObsException | IOException e) {
             if (log.isDebugEnabled()) {
-                log.error("Failed delete HuaweiObs file {}::{}", self.getBucket(), objectId);
+                log.error("Failed delete HuaweiObs file {}::{}", config.getBucket(), objectId);
             } else {
-                log.info("Failed delete HuaweiObs file {}::{}", self.getBucket(), objectId);
+                log.info("Failed delete HuaweiObs file {}::{}", config.getBucket(), objectId);
             }
             return false;
         }
     }
 
     private ObsClient obsClient() {
-        return new ObsClient(self.getAccessKey(), self.getSecretKey(), self.getEndpoint());
+        return new ObsClient(config.getAccessKey(), config.getSecretKey(), config.getEndpoint());
     }
 
 }
