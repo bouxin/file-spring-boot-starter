@@ -8,7 +8,7 @@
 - 功能
   > 提供通用云存储基础能力，上传、下载、删除等。
   
-- 引入
+- 引入：打包推到私服，在项目中引入依赖
   > ```xml
   > <dependency>
   >     <groupId>com.rugoo.cloud.storage</groupId>
