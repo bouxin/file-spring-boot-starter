@@ -1,5 +1,8 @@
 package com.rugoo.cloud.storage.config;
 
+import com.rugoo.cloud.storage.config.bean.AliyunOssConfig;
+import com.rugoo.cloud.storage.config.bean.HuaweiObsConfig;
+import com.rugoo.cloud.storage.config.bean.TencentCosConfig;
 import com.rugoo.cloud.storage.exception.CloudStorageConfigurationException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,11 +27,11 @@ public class CloudStorageProperties {
 
     private DataSize maxFileSize = DataSize.ofMegabytes(100L);
 
-    private HuaweiConfig huaweiConfig;
+    private HuaweiObsConfig huaweiObs;
 
-    private AliyunConfig aliyunConfig;
+    private AliyunOssConfig aliyunOss;
 
-    private TencentConfig tencentConfig;
+    private TencentCosConfig tencentCos;
 
     public boolean isDisable() {
         return disable;
@@ -69,130 +72,30 @@ public class CloudStorageProperties {
         return this;
     }
 
-    public HuaweiConfig getHuaweiConfig() {
-        return huaweiConfig;
+    public HuaweiObsConfig getHuaweiObs() {
+        return huaweiObs;
     }
 
-    public CloudStorageProperties setHuaweiConfig(HuaweiConfig huaweiConfig) {
-        this.huaweiConfig = huaweiConfig;
+    public CloudStorageProperties setHuaweiObs(HuaweiObsConfig huaweiObs) {
+        this.huaweiObs = huaweiObs;
         return this;
     }
 
-    public AliyunConfig getAliyunConfig() {
-        return aliyunConfig;
+    public AliyunOssConfig getAliyunOss() {
+        return aliyunOss;
     }
 
-    public CloudStorageProperties setAliyunConfig(AliyunConfig aliyunConfig) {
-        this.aliyunConfig = aliyunConfig;
+    public CloudStorageProperties setAliyunOss(AliyunOssConfig aliyunOss) {
+        this.aliyunOss = aliyunOss;
         return this;
     }
 
-    public TencentConfig getTencentConfig() {
-        return tencentConfig;
+    public TencentCosConfig getTencentCos() {
+        return tencentCos;
     }
 
-    public CloudStorageProperties setTencentConfig(TencentConfig tencentConfig) {
-        this.tencentConfig = tencentConfig;
+    public CloudStorageProperties setTencentCos(TencentCosConfig tencentCos) {
+        this.tencentCos = tencentCos;
         return this;
-    }
-
-    public static class HuaweiConfig extends Config {}
-
-    public static class AliyunConfig extends Config  {}
-
-    public static class TencentConfig extends Config {
-        private String region;
-
-        public String getRegion() {
-            return region;
-        }
-
-        public TencentConfig setRegion(String region) {
-            this.region = region;
-            return this;
-        }
-    }
-
-    public static class Config {
-        private String endpoint;
-
-        private String domain;
-
-        private String indexKey;
-
-        private String accessKey;
-
-        private String secretKey;
-
-        private String bucket;
-
-        private String storepath;
-
-        public String getEndpoint() {
-            return endpoint;
-        }
-
-        public Config setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-            return this;
-        }
-
-        public String getDomain() {
-            return domain;
-        }
-
-        public Config setDomain(String domain) {
-            this.domain = domain;
-            return this;
-        }
-
-        public String getIndexKey() {
-            return indexKey;
-        }
-
-        public Config setIndexKey(String indexKey) {
-            this.indexKey = indexKey;
-            return this;
-        }
-
-        public String getAccessKey() {
-            return accessKey;
-        }
-
-        public Config setAccessKey(String accessKey) {
-            this.accessKey = accessKey;
-            return this;
-        }
-
-        public String getSecretKey() {
-            return secretKey;
-        }
-
-        public Config setSecretKey(String secretKey) {
-            this.secretKey = secretKey;
-            return this;
-        }
-
-        public String getBucket() {
-            return bucket;
-        }
-
-        public Config setBucket(String bucket) {
-            this.bucket = bucket;
-            return this;
-        }
-
-        public String getStorepath() {
-            return storepath;
-        }
-
-        public Config setStorepath(String storepath) {
-            if (storepath.startsWith("/")) {
-                this.storepath = storepath.substring(1);
-            } else {
-                this.storepath = storepath;
-            }
-            return this;
-        }
     }
 }

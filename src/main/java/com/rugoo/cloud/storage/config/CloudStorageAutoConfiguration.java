@@ -15,11 +15,11 @@ import com.rugoo.cloud.storage.common.DefaultFileService;
  */
 @Configuration
 @EnableConfigurationProperties(CloudStorageProperties.class)
-public class FileCloudStorageAutoConfiguration {
+public class CloudStorageAutoConfiguration {
 
     public final CloudStorageProperties properties;
 
-    public FileCloudStorageAutoConfiguration(CloudStorageProperties properties) {
+    public CloudStorageAutoConfiguration(CloudStorageProperties properties) {
         this.properties = properties;
     }
 

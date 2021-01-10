@@ -10,7 +10,7 @@
   > ```xml
   > <dependency>
   >     <groupId>com.rugoo.cloud.storage</groupId>
-  >     <artifactId>spring-boot-starter-file-cloud-storage</artifactId>
+  >     <artifactId>cloud-storage-spring-boot-starter</artifactId>
   >     <version>1.0.0-SNAPSHOT</version>
   > </dependency>
   > ```

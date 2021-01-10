@@ -1,12 +1,11 @@
 package com.rugoo.cloud.storage.strategy;
 
 import com.rugoo.cloud.storage.CloudStorageStrategy;
-import com.rugoo.cloud.storage.config.CloudStorageProperties;
 import com.rugoo.cloud.storage.enums.CloudType;
 import com.rugoo.cloud.storage.exception.CloudStorageConfigurationException;
-import com.rugoo.cloud.storage.strategy.impl.AliyunOSS;
-import com.rugoo.cloud.storage.strategy.impl.HuaweiOBS;
-import com.rugoo.cloud.storage.strategy.impl.TencentOSS;
+import com.rugoo.cloud.storage.strategy.impl.AliyunOssStorageImpl;
+import com.rugoo.cloud.storage.strategy.impl.HuaweiObsStorageImpl;
+import com.rugoo.cloud.storage.strategy.impl.TencentCosStorageImpl;
 
 /**
  * Description
@@ -20,11 +19,11 @@ public class StorageFactory {
     public static CloudStorageStrategy create(CloudType type) {
         switch (type) {
             case HUAWEI:
-                return new HuaweiOBS();
+                return new HuaweiObsStorageImpl();
             case ALIYUN:
-                return new AliyunOSS();
+                return new AliyunOssStorageImpl();
             case TENCENT:
-                return new TencentOSS();
+                return new TencentCosStorageImpl();
             case DEFAULT:
             default:
                 throw new CloudStorageConfigurationException("Unknown Cloud platform, add any cloudary store service!");

@@ -8,9 +8,9 @@ import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.region.Region;
 import com.rugoo.cloud.storage.CloudStorageStrategy;
-import com.rugoo.cloud.storage.CustomCloudFileCreator;
 import com.rugoo.cloud.storage.common.ClientSign;
 import com.rugoo.cloud.storage.common.UploadInfo;
+import com.rugoo.cloud.storage.config.bean.TencentCosConfig;
 import com.rugoo.cloud.storage.exception.CloudStorageException;
 import com.rugoo.cloud.storage.util.StringUtil;
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -35,21 +36,21 @@ import java.util.UUID;
  * @see com.rugoo.cloud.storage.strategy.impl
  */
 @MarkAsCloudStorage(type = CloudType.TENCENT)
-public class TencentOSS implements CloudStorageStrategy, CustomCloudFileCreator {
+public class TencentCosStorageImpl implements CloudStorageStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(TencentOSS.class);
+    private static final Logger log = LoggerFactory.getLogger(TencentCosStorageImpl.class);
 
 
     @Resource
     private CloudStorageProperties properties;
 
-    private CloudStorageProperties.TencentConfig config;
+    private final TencentCosConfig config;
 
-    public TencentOSS() {
-        if (properties == null) {
+    public TencentCosStorageImpl() {
+        if (properties.getTencentCos() == null) {
             throw new CloudStorageConfigurationException("TencentOSS config unset");
         }
-        this.config = properties.getTencentConfig();
+        this.config = properties.getTencentCos();
     }
 
     @Override
@@ -78,7 +79,16 @@ public class TencentOSS implements CloudStorageStrategy, CustomCloudFileCreator 
             cosClient.shutdown();
         }
 
-        return createCloudFile(config, fileKey, filename, uploadInfo, CloudType.TENCENT);
+        return CloudFile.createInstance()
+                .setAccessUrl(StringUtil.concat(config.getDomain(), "/", fileKey))
+                .setObjectId(fileKey)
+                .setStorepath(config.getStorepath())
+                .setUploadtime(LocalDateTime.now())
+                .setCloudType(CloudType.TENCENT.name())
+                .setFsize(uploadInfo.getContentLength())
+                .setExtension(uploadInfo.getFileExtension())
+                .setPrevfilename(filename)
+                .setFilename(filename);
     }
 
     @Override
@@ -88,8 +98,9 @@ public class TencentOSS implements CloudStorageStrategy, CustomCloudFileCreator 
 
     @Override
     public boolean delete(String objectKey) {
+        COSClient client = cosClient();
         try {
-            cosClient().deleteObject(config.getBucket(), objectKey);
+            client.deleteObject(config.getBucket(), objectKey);
             return true;
         } catch (CosClientException e) {
             if (log.isDebugEnabled()) {
@@ -99,6 +110,8 @@ public class TencentOSS implements CloudStorageStrategy, CustomCloudFileCreator 
                 log.info("Failed to delete file {}::{}", config.getBucket(), objectKey);
             }
             return false;
+        } finally {
+            client.shutdown();
         }
     }
 

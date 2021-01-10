@@ -1,13 +1,10 @@
 package com.rugoo.cloud.storage.strategy.impl;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
+import com.aliyun.oss.*;
 import com.rugoo.cloud.storage.CloudStorageStrategy;
-import com.rugoo.cloud.storage.CustomCloudFileCreator;
 import com.rugoo.cloud.storage.common.ClientSign;
 import com.rugoo.cloud.storage.common.UploadInfo;
+import com.rugoo.cloud.storage.config.bean.AliyunOssConfig;
 import com.rugoo.cloud.storage.exception.CloudStorageConfigurationException;
 import com.rugoo.cloud.storage.exception.CloudStorageException;
 import com.rugoo.cloud.storage.util.StringUtil;
@@ -22,6 +19,7 @@ import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -32,19 +30,19 @@ import java.util.UUID;
  * @see com.rugoo.cloud.storage.strategy.impl
  */
 @MarkAsCloudStorage(type = CloudType.ALIYUN)
-public class AliyunOSS implements CloudStorageStrategy, CustomCloudFileCreator {
-    private static final Logger log = LoggerFactory.getLogger(AliyunOSS.class);
+public class AliyunOssStorageImpl implements CloudStorageStrategy {
+    private static final Logger log = LoggerFactory.getLogger(AliyunOssStorageImpl.class);
 
     @Resource
     private CloudStorageProperties properties;
 
-    private CloudStorageProperties.AliyunConfig config;
+    private final AliyunOssConfig config;
 
-    public AliyunOSS() {
-        if (properties.getAliyunConfig() == null) {
+    public AliyunOssStorageImpl() {
+        if (properties.getAliyunOss() == null) {
             throw new CloudStorageConfigurationException("AliyunOSS config unset");
         }
-        config = properties.getAliyunConfig();
+        config = properties.getAliyunOss();
     }
 
     @Override
@@ -74,7 +72,16 @@ public class AliyunOSS implements CloudStorageStrategy, CustomCloudFileCreator {
             }
         }
 
-        return createCloudFile(config, fileKey, filename, uploadInfo, CloudType.ALIYUN);
+        return CloudFile.createInstance()
+                .setAccessUrl(StringUtil.concat(config.getDomain(), "/", fileKey))
+                .setObjectId(fileKey)
+                .setStorepath(config.getStorepath())
+                .setUploadtime(LocalDateTime.now())
+                .setCloudType(CloudType.ALIYUN.name())
+                .setFsize(uploadInfo.getContentLength())
+                .setExtension(uploadInfo.getFileExtension())
+                .setPrevfilename(filename)
+                .setFilename(filename);
     }
 
     @Override
@@ -84,8 +91,9 @@ public class AliyunOSS implements CloudStorageStrategy, CustomCloudFileCreator {
 
     @Override
     public boolean delete(String objectKey) {
+        OSS ossClient = getOssClient();
         try {
-            getOssClient().deleteObject(config.getBucket(), objectKey);
+            ossClient.deleteObject(config.getBucket(), objectKey);
             return true;
         } catch (OSSException | ClientException e) {
             if (log.isDebugEnabled()) {
@@ -94,6 +102,10 @@ public class AliyunOSS implements CloudStorageStrategy, CustomCloudFileCreator {
                 log.info("Delete aliyun oss file failed! {}::{}", config.getBucket(), objectKey);
             }
             return false;
+        } finally {
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
         }
     }
 
